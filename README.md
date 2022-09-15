@@ -10,6 +10,6 @@ see instructions here: https://docs.wxwidgets.org/3.2.1/plat_msw_binaries.html  
 - Open Filament-wxWidget-Integration solution and build the app.<br/>
 - All compiled materials and Textures are pachaged in this repo.<br/>
 
-The demo shows some animated spheres, cubes and lights with textured and plain materialsalong with Controlable camera.
+The demo shows some animated spheres, cubes and lights with textured and plain materials along with Controlable camera.
  
  <img src="https://github.com/mahmoudgalal/Filament-wxWidget-Integration/blob/main/screenshot/Filament-wxWidget%20Integration%20Demo.png"/>
