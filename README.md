@@ -18,3 +18,4 @@ The demo shows some animated spheres, cubes and lights with textured and plain m
 - Press F1 to Add a Pyramid Stack to the scene.
  
  <img src="https://github.com/mahmoudgalal/Filament-wxWidget-Integration/blob/main/screenshot/Filament-wxWidget%20Integration%20Demo.png"/>
+<img src="https://github.com/mahmoudgalal/Filament-Physx-wxWidget-Integration/blob/PhysX-Integration/screenshot/screenshot2.png"/>
