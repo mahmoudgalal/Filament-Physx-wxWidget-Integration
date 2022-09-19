@@ -110,6 +110,8 @@ TexturedCube::TexturedCube(Engine& engine,
 		.material(0, mMaterialInstanceSolid)
 		.geometry(0, RenderableManager::PrimitiveType::TRIANGLES, mVertexBuffer, mIndexBuffer, 0, 3 * 2 * 6)
 		.priority(7)
+		.castShadows(true)
+		.receiveShadows(false)
 		.culling(culling)
 		.build(engine, mSolidRenderable);
 }
@@ -158,10 +160,31 @@ void TexturedCube::setPosition(filament::math::float3 const& position) {
 	tcm.setTransform(ci, translation * rotation * scale);
 }
 
+void TexturedCube::setScale(float s)
+{
+	setScale(s, s, s);
+}
+
+void TexturedCube::setScale(float sx, float sy, float sz)
+{
+	auto& tcm = this->mEngine.getTransformManager();
+	auto ci = tcm.getInstance(getRenderable());
+	math::float3 scalVec = { sx, sy, sz };
+	scale = mat4f::scaling(scalVec);
+
+	mat4f model = tcm.getTransform(ci);
+	model[0].x = sx;
+	model[1].y = sy;
+	model[2].z = sz;
+
+	tcm.setTransform(ci, model);
+}
+
 TexturedCube::~TexturedCube() {
 	mEngine.destroy(mVertexBuffer);
 	mEngine.destroy(mIndexBuffer);
 	mEngine.destroy(mMaterialInstanceSolid);
+	mMaterialInstanceSolid = nullptr;
 	// We don't own the material, only instances
 	mEngine.destroy(mSolidRenderable);
 

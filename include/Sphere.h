@@ -2,6 +2,7 @@
 #include <utils/Entity.h>
 #include <math/vec3.h>
 #include <math/mat4.h>
+#include"Node.h"
 
 namespace filament {
     class Engine;
@@ -11,7 +12,7 @@ namespace filament {
     class VertexBuffer;
 }
 
-class Sphere {
+class Sphere: public Node {
 public:
 
     Sphere(filament::Engine& engine,
@@ -36,6 +37,14 @@ public:
 
     filament::MaterialInstance* getMaterialInstance() {
         return mMaterialInstance;
+    }
+
+    virtual utils::Entity& getRenderable() {
+        return mRenderable;
+    }
+
+    virtual filament::Engine& getEngine() {
+        return mEngine;
     }
 
     Sphere& setPosition(filament::math::float3 const& position) noexcept;

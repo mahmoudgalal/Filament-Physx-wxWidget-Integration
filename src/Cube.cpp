@@ -67,6 +67,8 @@ Cube::Cube(Engine& engine, filament::MaterialInstance* materialInstance,
 		.material(0, mMaterialInstance)
 		.geometry(0, RenderableManager::PrimitiveType::TRIANGLES, mVertexBuffer, mIndexBuffer, 0, 3 * 2 * 6)
 		.priority(7)
+		.castShadows(false)
+		.receiveShadows(true)
 		.culling(culling)
 		.build(engine, mSolidRenderable);
 
@@ -76,7 +78,7 @@ Cube::Cube(Engine& engine, filament::MaterialInstance* materialInstance,
 					  { 1, 1, 1 } })
 		.material(0, mMaterialInstance)
 		.geometry(0, RenderableManager::PrimitiveType::LINES, mVertexBuffer, mIndexBuffer, WIREFRAME_OFFSET, 24)
-		.priority(6)
+		.priority(6)		
 		.culling(culling)
 		.build(engine, mWireFrameRenderable);
 }
@@ -124,14 +126,21 @@ void Cube::setPosition(filament::math::float3 const& position) {
 	//mat4f model = tcm.getTransform(ci);
    // model[3].xyz = position;
 	translation = mat4f::translation(position);
+	
 	tcm.setTransform(ci, translation * rotation * scale);
 }
 
 void Cube::setScale(float s)
 {
+	setScale(s, s, s);
+}
+
+void Cube::setScale(float sx, float sy, float sz)
+{
 	auto& tcm = this->mEngine.getTransformManager();
 	auto ci = tcm.getInstance(getRenderable());
-	scale = mat4f::scaling(s);
+	math::float3 scalVec  = {sx, sy, sz };
+	scale = mat4f::scaling(scalVec);
 	tcm.setTransform(ci, translation * rotation * scale);
 }
 
@@ -147,3 +156,4 @@ Cube::~Cube() {
 	em.destroy(mSolidRenderable);
 	em.destroy(mWireFrameRenderable);
 }
+

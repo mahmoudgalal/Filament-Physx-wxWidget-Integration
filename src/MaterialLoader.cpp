@@ -33,9 +33,11 @@ std::shared_ptr<filamat::Package> MaterialLoader::loadMaterialData(MaterialType 
 	std::ofstream materialStream(filename, std::ios::binary);
 	MaterialBuilder builder;
 	builder.name(typeNamesMap[materialType]);
+
 	if (materialType == MaterialType::MaterialTypeTextured) {
 		builder.require(VertexAttribute::UV0)
 			//.parameter(UniformType::FLOAT4, ParameterPrecision::DEFAULT, "baseColor")
+			.blending(BlendingMode::OPAQUE)
 			.parameter(SamplerType::SAMPLER_2D, "albedo")
 			.material("void material (inout MaterialInputs material) {"
 				"  prepareMaterial(material);"
@@ -48,7 +50,8 @@ std::shared_ptr<filamat::Package> MaterialLoader::loadMaterialData(MaterialType 
 		builder
 			.blending(BlendingMode::TRANSPARENT)
 			.culling(MaterialBuilder::CullingMode::NONE)
-			.depthCulling(false)
+			.depthCulling(true)
+			.shadowMultiplier(true)
 			.parameter(UniformType::FLOAT4, ParameterPrecision::DEFAULT, "baseColor")
 			.material("void material (inout MaterialInputs material) {"
 				"  prepareMaterial(material);"

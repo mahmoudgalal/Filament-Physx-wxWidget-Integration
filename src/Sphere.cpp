@@ -84,7 +84,7 @@ Sphere::Sphere(Engine& engine, MaterialInstance* materialInstance, bool culling)
 		.culling(culling)
 		.build(engine, mRenderable);
 	auto& rcm = engine.getRenderableManager();
-	rcm.setCastShadows(rcm.getInstance(mRenderable), false);
+	rcm.setCastShadows(rcm.getInstance(mRenderable), true);
 }
 
 Sphere::~Sphere() {

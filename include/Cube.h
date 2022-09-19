@@ -25,8 +25,9 @@
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
 #include <utils/Entity.h>
+#include "Node.h"
 
-class Cube {
+class Cube: public Node {
 public:
     enum RenderMode
     {
@@ -45,16 +46,22 @@ public:
     utils::Entity getWireFrameRenderable() {
         return mWireFrameRenderable;
     }
-    utils::Entity getRenderable() {
+
+    virtual utils::Entity& getRenderable() {
         return renderMode == RENDERMODE_WIREFRAME? mWireFrameRenderable: mSolidRenderable;
     }
+
+    virtual filament::Engine& getEngine() {
+        return mEngine;
+    }
+
     void rotateX(double angle);
     void rotateY(double angle);
     void rotateZ(double angle);
     void rotateXYZ(double angle);
     void setPosition(filament::math::float3 const& position);
     void setScale(float s);
-
+    void setScale(float sx, float sy, float sz);
     ~Cube();   
 
 private:

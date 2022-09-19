@@ -120,7 +120,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WIN32;WIN32;_USE_MATH_DEFINES=1;FILAMENT_SUPPORTS_OPENGL;FILAMENT_IBL_LITE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>.\include;$(FILAMENT_INCLUDE_DIR)\filament\include;$(FILAMENT_INCLUDE_DIR)\libs\filabridge\include;$(FILAMENT_INCLUDE_DIR)\libs\filamat\include;$(FILAMENT_INCLUDE_DIR)\libs\math\include;$(FILAMENT_INCLUDE_DIR)\libs\utils\include;$(FILAMENT_INCLUDE_DIR)\libs\camutils\include;$(FILAMENT_INCLUDE_DIR)\filament\backend\include;$(FILAMENT_INCLUDE_DIR)\third_party\robin-map;$(FILAMENT_INCLUDE_DIR)\libs\geometry\include;$(FILAMENT_INCLUDE_DIR)\third_party\stb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\include;$(FILAMENT_INCLUDE_DIR)\filament\include;$(FILAMENT_INCLUDE_DIR)\libs\filabridge\include;$(FILAMENT_INCLUDE_DIR)\libs\filamat\include;$(FILAMENT_INCLUDE_DIR)\libs\math\include;$(FILAMENT_INCLUDE_DIR)\libs\utils\include;$(FILAMENT_INCLUDE_DIR)\libs\camutils\include;$(FILAMENT_INCLUDE_DIR)\filament\backend\include;$(FILAMENT_INCLUDE_DIR)\third_party\robin-map;$(FILAMENT_INCLUDE_DIR)\libs\geometry\include;$(FILAMENT_INCLUDE_DIR)\third_party\stb;$(PHYSX_DIR)\include;$(PHYSX_DIR)\source\foundation\include;$(PHYSX_DIR)\source\physxextensions\src;$(PHYSX_DIR)\..\pxshared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <UseFullPaths>false</UseFullPaths>
@@ -131,8 +131,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(FILAMENT_LIB_DIR)\filament\Debug;$(FILAMENT_LIB_DIR)\shaders\Debug;$(FILAMENT_LIB_DIR)\libs\utils\Debug;$(FILAMENT_LIB_DIR)\libs\filaflat\Debug;$(FILAMENT_LIB_DIR)\libs\ibl\Debug;$(FILAMENT_LIB_DIR)\libs\bluegl\Debug;$(FILAMENT_LIB_DIR)\libs\math\Debug;$(FILAMENT_LIB_DIR)\libs\filabridge\Debug;$(FILAMENT_LIB_DIR)\libs\filamat\Debug;$(FILAMENT_LIB_DIR)\libs\camutils\Debug;$(FILAMENT_LIB_DIR)\filament\backend\Debug;$(FILAMENT_LIB_DIR)\libs\geometry\Debug;$(FILAMENT_LIB_DIR)\third_party\smol-v\tnt\Debug;$(FILAMENT_LIB_DIR)\third_party\spirv-cross\tnt\Debug;$(FILAMENT_LIB_DIR)\third_party\glslang\tnt\glslang\Debug;$(FILAMENT_LIB_DIR)\third_party\spirv-tools\source\Debug;$(FILAMENT_LIB_DIR)\third_party\spirv-tools\source\opt\Debug;$(FILAMENT_LIB_DIR)\third_party\glslang\tnt\SPIRV\Debug;$(FILAMENT_LIB_DIR)\third_party\glslang\tnt\glslang\OSDependent\Windows\Debug\;$(FILAMENT_LIB_DIR)\third_party\glslang\tnt\OGLCompilersDLL\Debug;$(FILAMENT_LIB_DIR)\third_party\stb\tnt\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>filament.lib;backend.lib;filabridge.lib;filamat.lib;math.lib;utils.lib;bluegl.lib;opengl32.lib;ibl-lite.lib;filaflat.lib;gdi32.lib;winmm.lib;smol-v.lib;shaders.lib;SPIRVd.lib;glslangd.lib;SPIRV-Tools-opt.lib;SPIRV-Tools.lib;spirv-cross-glsl.lib;spirv-cross-core.lib;spirv-cross-msl.lib;OGLCompilerd.lib;OSDependentd.lib;geometry.lib;stb.lib;camutils.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(FILAMENT_LIB_DIR)\filament\Debug;$(FILAMENT_LIB_DIR)\shaders\Debug;$(FILAMENT_LIB_DIR)\libs\utils\Debug;$(FILAMENT_LIB_DIR)\libs\filaflat\Debug;$(FILAMENT_LIB_DIR)\libs\ibl\Debug;$(FILAMENT_LIB_DIR)\libs\bluegl\Debug;$(FILAMENT_LIB_DIR)\libs\math\Debug;$(FILAMENT_LIB_DIR)\libs\filabridge\Debug;$(FILAMENT_LIB_DIR)\libs\filamat\Debug;$(FILAMENT_LIB_DIR)\libs\camutils\Debug;$(FILAMENT_LIB_DIR)\filament\backend\Debug;$(FILAMENT_LIB_DIR)\libs\geometry\Debug;$(FILAMENT_LIB_DIR)\third_party\smol-v\tnt\Debug;$(FILAMENT_LIB_DIR)\third_party\spirv-cross\tnt\Debug;$(FILAMENT_LIB_DIR)\third_party\glslang\tnt\glslang\Debug;$(FILAMENT_LIB_DIR)\third_party\spirv-tools\source\Debug;$(FILAMENT_LIB_DIR)\third_party\spirv-tools\source\opt\Debug;$(FILAMENT_LIB_DIR)\third_party\glslang\tnt\SPIRV\Debug;$(FILAMENT_LIB_DIR)\third_party\glslang\tnt\glslang\OSDependent\Windows\Debug\;$(FILAMENT_LIB_DIR)\third_party\glslang\tnt\OGLCompilersDLL\Debug;$(FILAMENT_LIB_DIR)\third_party\stb\tnt\Debug;$(PHYSX_DIR)\bin\win.x86_64.vc142.mt\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>filament.lib;backend.lib;filabridge.lib;filamat.lib;math.lib;utils.lib;bluegl.lib;opengl32.lib;ibl-lite.lib;filaflat.lib;gdi32.lib;winmm.lib;smol-v.lib;shaders.lib;SPIRVd.lib;glslangd.lib;SPIRV-Tools-opt.lib;SPIRV-Tools.lib;spirv-cross-glsl.lib;spirv-cross-core.lib;spirv-cross-msl.lib;OGLCompilerd.lib;OSDependentd.lib;geometry.lib;stb.lib;camutils.lib;PhysX_64.lib;PhysXExtensions_static_64.lib;PhysXPvdSDK_static_64.lib;PhysXCommon_64.lib;PhysXFoundation_64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -157,6 +157,9 @@
     <ClCompile Include="src\IcoSphere.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MaterialLoader.cpp" />
+    <ClCompile Include="src\Node.cpp" />
+    <ClCompile Include="src\PhysXManager.cpp" />
+    <ClCompile Include="src\ShadowPlane.cpp" />
     <ClCompile Include="src\Sphere.cpp" />
     <ClCompile Include="src\TexturedCube.cpp" />
     <ClCompile Include="src\TextureLoader.cpp" />
@@ -166,6 +169,9 @@
     <ClInclude Include="include\FilamentApp.h" />
     <ClInclude Include="include\IcoSphere.h" />
     <ClInclude Include="include\MaterialLoader.h" />
+    <ClInclude Include="include\Node.h" />
+    <ClInclude Include="include\PhysXManager.h" />
+    <ClInclude Include="include\ShadowPlane.h" />
     <ClInclude Include="include\Sphere.h" />
     <ClInclude Include="include\TexturedCube.h" />
     <ClInclude Include="include\TextureLoader.h" />

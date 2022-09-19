@@ -33,7 +33,6 @@ class MyApp : public wxApp
 public:
     virtual bool OnInit();
     FilamentApp* app;
-    bool render_loop_on = false;
     RenderTimer* timer;
     ~MyApp() {
         delete timer;
@@ -82,7 +81,7 @@ if (AllocConsole())
 }
 
 MyFrame::MyFrame()
-    : wxFrame(NULL, wxID_ANY, "Filament-wxWidget Integration Demo",wxDefaultPosition,wxSize(1024,800), wxCUSTOM_DEFAULT_FRAME_STYLE)
+    : wxFrame(NULL, wxID_ANY, "Filament-Nvidia-Physx Integration Demo",wxDefaultPosition,wxSize(1024,800), wxCUSTOM_DEFAULT_FRAME_STYLE)
 {
     Bind(wxEVT_LEFT_DOWN, [](wxMouseEvent& event) {
         wxGetApp().app->onMouseDown(event.GetX(), event.GetY());
@@ -93,6 +92,19 @@ MyFrame::MyFrame()
     Bind(wxEVT_MOTION, [](wxMouseEvent& event) {
         wxGetApp().app->onMouseMove(event.GetX(), event.GetY());
         });
+	Bind(wxEVT_KEY_DOWN, [](wxKeyEvent& event) {
+		if (event.GetKeyCode() == WXK_SPACE) {
+			wxGetApp().app->createEyeProjectile();
+		}
+		else if (event.GetKeyCode() == WXK_RETURN)
+		{
+			wxGetApp().app->createEyeProjectile(FilamentApp::CubeProjectile);
+		}
+        else if (event.GetKeyCode() == WXK_F1)
+        {
+            wxGetApp().app->createPyramidStack(5);
+        }
+		});
 }
 
 void MyFrame::OnClose(wxCloseEvent& event) {

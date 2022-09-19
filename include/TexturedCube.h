@@ -9,8 +9,10 @@
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
 #include <utils/Entity.h>
+#include "Node.h"
 
-class TexturedCube
+
+class TexturedCube : public Node
 {
 public:
     enum RenderMode
@@ -27,13 +29,20 @@ public:
         return mSolidRenderable;
     }
 
-    utils::Entity getRenderable() {
+    virtual utils::Entity& getRenderable() {
         return mSolidRenderable;
     }
+
+    virtual filament::Engine& getEngine() {
+        return mEngine;
+    }
+
     void rotateX(double angle);
     void rotateY(double angle);
     void rotateZ(double angle);
     void rotateXYZ(double angle);
+    void setScale(float s);
+    void setScale(float sx, float sy, float sz);
     void setPosition(filament::math::float3 const& position);
     ~TexturedCube();
 
