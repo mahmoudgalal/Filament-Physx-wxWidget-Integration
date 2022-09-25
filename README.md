@@ -12,10 +12,12 @@ see instructions here: https://docs.wxwidgets.org/3.2.1/plat_msw_binaries.html  
 - All compiled materials and Textures are pachaged in this repo.<br/>
 - The Physx integration is in separate branch,<b>Physx-Integration</b>.
 
-The demo shows some animated spheres, cubes and lights with textured and plain materials along with Controlable camera.
+The demo shows some animated, Physics-controlled, spheres, cubes and lights with textured and plain materials along with Controlable camera.
+- Move the orbit camera using the mouse.
 - Press SPACE to shoot a box
 - Press ENTER to shoot a sphere
 - Press F1 to Add a Pyramid Stack to the scene.
+- Right click an object to pick it (Raycasting).
  
  <img src="https://github.com/mahmoudgalal/Filament-wxWidget-Integration/blob/main/screenshot/Filament-wxWidget%20Integration%20Demo.png"/>
 <img src="https://github.com/mahmoudgalal/Filament-Physx-wxWidget-Integration/blob/PhysX-Integration/screenshot/screenshot2.png"/>
