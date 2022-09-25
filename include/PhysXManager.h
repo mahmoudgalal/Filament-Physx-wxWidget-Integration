@@ -17,6 +17,7 @@ public:
 	void createSphere(float x, float y, float z, float radius, const Node* node , const PxVec3& velocity = PxVec3(0));
 
 	void updateNodes();
+	void rayCast(PxVec3& origin, PxVec3& dir);
 
 private:
 	void initializePhysX();

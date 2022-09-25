@@ -38,10 +38,12 @@ std::shared_ptr<filamat::Package> MaterialLoader::loadMaterialData(MaterialType 
 		builder.require(VertexAttribute::UV0)
 			//.parameter(UniformType::FLOAT4, ParameterPrecision::DEFAULT, "baseColor")
 			.blending(BlendingMode::OPAQUE)
+			.parameter(UniformType::FLOAT4, ParameterPrecision::DEFAULT, "postLightingColor")
 			.parameter(SamplerType::SAMPLER_2D, "albedo")
 			.material("void material (inout MaterialInputs material) {"
 				"  prepareMaterial(material);"
 				"  material.baseColor.rgb = texture(materialParams_albedo, getUV0()).rgb;"
+				"  material.postLightingColor = materialParams.postLightingColor ;"
 				"}")
 			.shading(MaterialBuilder::Shading::UNLIT);
 

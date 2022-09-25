@@ -41,6 +41,7 @@ void PhysXManager::createCube(float x, float y, float z, const Node* node, const
 	PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
 	body->setLinearVelocity(velocity);
 	body->setAngularDamping(0.5f);
+	body->setName(node->getName().c_str());
 	gScene->addActor(*body);
 	body->userData = (void*)node;
 	shape->release();
@@ -54,6 +55,7 @@ void PhysXManager::createStaticCube(const PxVec3& pos, const PxVec3& scale, cons
 	body->attachShape(*shape);
 	//PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
 	gScene->addActor(*body);
+	body->setName(node->getName().c_str());
 	body->userData = (void*)node;
 	shape->release();
 }
@@ -65,6 +67,7 @@ void PhysXManager::createSphere(float x, float y, float z, float radius, const N
 	PxRigidDynamic* dynamic = PxCreateDynamic(*gPhysics, localTm, g, *gMaterial, 10.0f);
 	dynamic->setLinearVelocity(velocity);
 	dynamic->setAngularDamping(0.5f);
+	dynamic->setName(node->getName().c_str());
 	dynamic->userData = (void*)node;
 	gScene->addActor(*dynamic);
 }
@@ -76,15 +79,35 @@ void PhysXManager::updateNodes()
 	{
 		std::vector<PxRigidActor*> actors(nbActors);
 		gScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), nbActors);
-		for (auto actor : actors)
+		for (auto& actor : actors)
 		{
+			const bool sleeping = actor->is<PxRigidDynamic>() ? actor->is<PxRigidDynamic>()->isSleeping() : false;
 			auto node = reinterpret_cast<Node*>(actor->userData);
 			if (node != nullptr ) {
-				const PxMat44 transform = actor->getGlobalPose();
+				const PxMat44 transform = actor->getGlobalPose();				
 				node->setPose(&transform.column0.x);
+				node->onSleep(sleeping);
 			}
 		}
 	}
+}
+
+void PhysXManager::rayCast(PxVec3& origin, PxVec3& unitDir)
+{
+	PxReal maxDistance = 2000;            // [in] Raycast max distance
+	PxRaycastBuffer hit;                 // [out] Raycast results
+
+	// Raycast against all static & dynamic objects (no filtering)
+	// The main result from this call is the closest hit, stored in the 'hit.block' structure
+	bool status = gScene->raycast(origin, unitDir, maxDistance, hit);
+	
+	if (status) {
+		std::cout << "Item Picked:" << hit.block.actor->getName()<<std::endl;
+		auto actor = hit.block.actor->is<PxRigidDynamic>();
+		if(actor)
+		PxRigidBodyExt::addForceAtLocalPos(*actor, PxVec3(0.1, 900.0f, 120.3f),
+			PxVec3(0.1, 0.50f, 0.3f), PxForceMode::eIMPULSE);
+	}		
 }
 
 void PhysXManager::initializePhysX()
@@ -115,6 +138,7 @@ void PhysXManager::initializePhysX()
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
 	PxRigidStatic* groundPlane = PxCreatePlane(*gPhysics, PxPlane(0, 1, 0, 0), *gMaterial);
+	groundPlane->setName("Ground_Plane");
 	gScene->addActor(*groundPlane);
 }
 

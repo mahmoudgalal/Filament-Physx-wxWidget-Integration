@@ -12,6 +12,8 @@
 #include<iostream>
 #include <utils/EntityManager.h>
 #include "MaterialLoader.h"
+#include <math/TMatHelpers.h>
+#include <math/TVecHelpers.h>
 
 using namespace filament;
 using namespace filament::math;
@@ -90,22 +92,29 @@ void FilamentApp::run(void* windowHandle, void* context, unsigned int w, unsigne
 		matInstance1->setParameter("metallic", 1.0f);
 		matInstance1->setParameter("roughness", 0.6f);
 		matInstance1->setParameter("reflectance", 0.9f);
-		rotatingSpheres.push_back(new Sphere(*mEngine, matInstance1));
-		physXManager->createSphere(0, 3 + 4 * i, 3.4 + i, 1.0f, rotatingSpheres[i]);
-		mScene->addEntity(rotatingSpheres[i]->getSolidRenderable());
+		auto item = new Sphere(*mEngine, matInstance1);
+		auto name = std::string("Sphere_No_"); name += std::to_string(i);
+		item->setName(name);
+		rotatingSpheres.push_back(item);
+		physXManager->createSphere(0, 3 + 4 * i, 3.4 + i, 1.0f, item);
+		auto itemRenderable = item->getRenderable();
+		mScene->addEntity(itemRenderable);
+		nodes_map[itemRenderable.getId()] = item;
 	}
 
+	auto tex = textureLoader->loadTexture("textures/texture.png");
+	loadedTextures.push_back(tex);
 	// Textured Cube
 	{
 		auto texCubeMat = mTexturedMaterial->createInstance();
-		auto tex = textureLoader->loadTexture("textures/texture.png");
-		loadedTextures.push_back(tex);
 		TextureSampler sampler(MinFilter::LINEAR, MagFilter::LINEAR);
 		for (size_t i = 0; i < 4; i++)
 		{
 			auto matInst = MaterialInstance::duplicate(texCubeMat);
 			matInst->setParameter("albedo", tex, sampler);
 			auto texturedCube = new TexturedCube(*mEngine, matInst, { 1,0,0 });
+			auto name = std::string("Textured_Cube_"); name += std::to_string(i)+" ";
+			texturedCube->setName(name);
 			texturedCubes.push_back(texturedCube);
 			physXManager->createCube(1.0f, i + 10.0f, 2.0f, texturedCube);
 			mScene->addEntity(texturedCube->getRenderable());
@@ -116,14 +125,14 @@ void FilamentApp::run(void* windowHandle, void* context, unsigned int w, unsigne
 	// Walls
 	{
 		auto texCubeMat = mTexturedMaterial->createInstance();
-		auto tex = textureLoader->loadTexture("textures/texture.png");
-		loadedTextures.push_back(tex);
 		TextureSampler sampler(MinFilter::LINEAR, MagFilter::LINEAR);
 		for (size_t i = 0; i < 4; i++)
 		{
 			auto matInst = MaterialInstance::duplicate(texCubeMat);
 			matInst->setParameter("albedo", tex, sampler);
 			auto texturedWall = new TexturedCube(*mEngine, matInst, { 1,0,0 });
+			auto name = std::string("Wall_Cube_"); name += std::to_string(i) ;
+			texturedWall->setName(name);
 			walls.push_back(texturedWall);
 			auto scale = PxVec3(40, 40, 40);
 			float3 s = { 40 };
@@ -209,10 +218,41 @@ void FilamentApp::render(long long time) {
 	}
 }
 
-void FilamentApp::onMouseDown(int x, int y)
+void FilamentApp::onMouseDown(int x, int y, const MouseButton& mbtn)
 {
-	if (mMainCameraMan) {
+	if (mMainCameraMan && mbtn == Left_Button) {
 		mMainCameraMan->grabBegin(x, y, false);
+	}
+	if (mbtn == Right_Button) {
+		auto projectionMat = mMainCamera->getProjectionMatrix();
+		auto viewMat = mMainCamera->getViewMatrix();
+		auto resultMat = projectionMat*viewMat;
+		auto inversed = math::details::matrix::inverse(resultMat);
+		auto screenWidth = view->getViewport().width;
+		auto screenHeight = view->getViewport().height;
+		math::float4 lRayStart_NDC(
+			((float)x / (float)screenWidth - 0.5f) * 2.0f, // [0,1024] -> [-1,1]
+			((float)((screenHeight-y) / (float)screenHeight) - 0.5f) * 2.0f, // [0, 768] -> [-1,1]
+			-1.0, // The near plane maps to Z=-1 in Normalized Device Coordinates
+			1.0f
+		);
+		math::float4 lRayEnd_NDC(
+			((float)x / (float)screenWidth - 0.5f) * 2.0f,
+			((float)((screenHeight-y) / (float)screenHeight) - 0.5f) * 2.0f,
+			0.0,
+			1.0f
+		);
+		math::float4 lRayStart_world = inversed * lRayStart_NDC; lRayStart_world/=lRayStart_world.w;
+		math::float4 lRayEnd_world   = inversed * lRayEnd_NDC  ; lRayEnd_world  /=lRayEnd_world.w;
+
+		math::float4 lRayDir_world(lRayEnd_world - lRayStart_world);
+		//normalize( lRayDir_world);
+		auto value = sqrtf(powf(lRayDir_world.x, 2) + powf(lRayDir_world.y, 2) + powf(lRayDir_world.z, 2));
+		lRayDir_world /= value;
+		
+		 auto origin = physx::PxVec3(lRayStart_world.x, lRayStart_world.y, lRayStart_world.z);
+		 auto dir = physx::PxVec3(lRayDir_world.x, lRayDir_world.y, lRayDir_world.z);
+		physXManager->rayCast(origin,dir);
 	}
 }
 
@@ -223,9 +263,9 @@ void FilamentApp::onMouseMove(int x, int y)
 	}
 }
 
-void FilamentApp::onMouseUp(int x, int y)
+void FilamentApp::onMouseUp(int x, int y, const MouseButton& mbtn)
 {
-	if (mMainCameraMan) {
+	if (mMainCameraMan && mbtn == Left_Button) {
 		mMainCameraMan->grabEnd();
 	}
 }
@@ -243,6 +283,8 @@ void FilamentApp::createEyeProjectile(const ProjectileType& t)
 		matInstance1->setParameter("roughness", 0.6f);
 		matInstance1->setParameter("reflectance", 0.9f);
 		s = new Sphere(*mEngine, matInstance1);
+		auto name = std::string("Sphere_Projectile");
+		s->setName(name);
 		physXManager->createSphere(camPos.x, camPos.y, camPos.z, 1.0f, s, PxVec3(eye.x, eye.y, eye.z) * 100);
 	}
 	else {
@@ -250,6 +292,8 @@ void FilamentApp::createEyeProjectile(const ProjectileType& t)
 		TextureSampler sampler(MinFilter::LINEAR, MagFilter::LINEAR);
 		texCubeMat->setParameter("albedo", loadedTextures[0], sampler);
 		s = new TexturedCube(*mEngine, texCubeMat, { 1,0,0 });
+		auto name = std::string("Cube_Projectile");
+		s->setName(name);
 		physXManager->createCube(camPos.x, camPos.y, camPos.z, s, PxVec3(eye.x, eye.y, eye.z) * 100);
 	}
 	projectiles.push_back(s);
@@ -268,8 +312,10 @@ void FilamentApp::createPyramidStack(uint32_t size, float centerX, float centerY
 				TextureSampler sampler(MinFilter::LINEAR, MagFilter::LINEAR);
 				texCubeMat->setParameter("albedo", loadedTextures[0], sampler);
 				auto s = new TexturedCube(*mEngine, texCubeMat, { 1,0,0 });
+				auto name = std::string("Textured_Cube_"); name += std::to_string(i + j + k);
+				s->setName(name);
 				physXManager->createCube(centerX + (2 * j) - i, centerY + 1 + 2 * i, centerZ + (2 * k) - i, s);
-				pyramids.push_back(s);
+				pyramids.push_back(s);				
 				mScene->addEntity(s->getRenderable());
 			}
 		}

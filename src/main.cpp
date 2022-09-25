@@ -71,12 +71,18 @@ if (AllocConsole())
 
     app = &(FilamentApp::get());
     auto nativeWindow = frame->GetHWND();
-    auto size = frame->GetSize();
+    auto size = frame->GetClientSize();
     auto h = size.GetHeight();
     auto w = size.GetWidth();
     app->run((void*)nativeWindow, nullptr, w, h);
     timer = new RenderTimer(app);
     timer->start();
+    
+    auto borderHeight = wxSystemSettings::GetMetric(wxSystemMetric::wxSYS_BORDER_Y, NULL);
+    auto titleHeight = wxSystemSettings::GetMetric(wxSystemMetric::wxSYS_CAPTION_Y,  NULL);
+    std::cout << "Window Title height = " << titleHeight<<std::endl;
+    std::cout << "Window Title Border height = " << borderHeight << std::endl;
+    std::cout << "Window Client size:" << w << "X" << h << std::endl;
     return true;
 }
 
@@ -91,6 +97,14 @@ MyFrame::MyFrame()
         });
     Bind(wxEVT_MOTION, [](wxMouseEvent& event) {
         wxGetApp().app->onMouseMove(event.GetX(), event.GetY());
+        });
+    Bind(wxEVT_RIGHT_DOWN, [](wxMouseEvent& event) {
+        auto x = event.GetX(); auto y = event.GetY();
+        wxGetApp().app->onMouseDown(x,y,FilamentApp::MouseButton::Right_Button);
+        });
+    Bind(wxEVT_RIGHT_UP, [](wxMouseEvent& event) {
+        wxGetApp().app->onMouseUp(event.GetX(), event.GetY(), 
+            FilamentApp::MouseButton::Right_Button);
         });
 	Bind(wxEVT_KEY_DOWN, [](wxKeyEvent& event) {
 		if (event.GetKeyCode() == WXK_SPACE) {

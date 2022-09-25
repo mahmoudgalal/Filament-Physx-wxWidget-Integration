@@ -180,6 +180,11 @@ void TexturedCube::setScale(float sx, float sy, float sz)
 	tcm.setTransform(ci, model);
 }
 
+void TexturedCube::onSleep(bool isSleeping) {
+	float4 color = isSleeping ? float4( 0.4, 0, 0, 0.4) : float4(0.0, 0, 0, 0.0);
+	mMaterialInstanceSolid->setParameter("postLightingColor", RgbaType::LINEAR, color);
+}
+
 TexturedCube::~TexturedCube() {
 	mEngine.destroy(mVertexBuffer);
 	mEngine.destroy(mIndexBuffer);

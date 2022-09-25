@@ -36,6 +36,7 @@ public:
     virtual filament::Engine& getEngine() {
         return mEngine;
     }
+    void onSleep(bool isSleeping) override;
 
     void rotateX(double angle);
     void rotateY(double angle);

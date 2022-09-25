@@ -17,6 +17,8 @@
 #include "PhysXManager.h"
 #include "ShadowPlane.h"
 #include<vector>
+#include<map>
+
 
 namespace filament {
 	class Renderer;
@@ -56,6 +58,7 @@ class FilamentApp
 	CameraManipulator* mMainCameraMan = nullptr;
 	long long mLastTime = 0, mTimeStp = 0;
 	std::shared_ptr<PhysXManager> physXManager;
+	std::map<uint32_t,Node*> nodes_map;
 	 
 
 public:
@@ -69,12 +72,16 @@ public:
 		CubeProjectile,
 		SphereProjectile
 	};
+	enum MouseButton {
+		Right_Button,
+		Left_Button
+	};
 	static FilamentApp& get();
 	void run(void* windowHandle, void* context, unsigned int w = 0, unsigned int h = 0);
 	void render(long long time = 0);
-	void onMouseDown(int x, int y);
+	void onMouseDown(int x, int y, const MouseButton& mbtn = Left_Button);
 	void onMouseMove(int x, int y);
-	void onMouseUp(int x, int y);
+	void onMouseUp(int x, int y, const MouseButton& mbtn = Left_Button);
 	void createEyeProjectile(const ProjectileType& t = ProjectileType::SphereProjectile);
 	void createPyramidStack(uint32_t size, float centerX = 0.0f, float centerY = 0.0f, float centerZ = 0.0f);
 
