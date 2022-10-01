@@ -24,13 +24,11 @@ public:
     virtual filament::Engine& getEngine() {
         return mEngine;
     }
-    void rotateX(double angle);
-    void rotateY(double angle);
-    void rotateZ(double angle);
+    void rotateX(double angle) override;
+    void rotateY(double angle) override;
+    void rotateZ(double angle) override;
     void rotateXYZ(double angle);
-    void setPosition(filament::math::float3 const& position);
-    void setScale(float s);
-    void setScale(float sx, float sy, float sz);
+    void setPosition(filament::math::float3 const& position) override;
     ~ShadowPlane();
 
 private:

@@ -9,7 +9,7 @@
 #include <filament/Scene.h>
 #include <filament/Skybox.h>
 #include <filament/View.h>
-#include<iostream>
+#include <iostream>
 #include <utils/EntityManager.h>
 #include "MaterialLoader.h"
 #include <math/TMatHelpers.h>
@@ -42,6 +42,8 @@ void FilamentApp::run(void* windowHandle, void* context, unsigned int w, unsigne
 	skybox = Skybox::Builder().color({ 0.1, 0.125, 0.25, 1.0 }).build(*mEngine);
 	mScene->setSkybox(skybox);
 
+	gltfModelLoader = new GLTFModelLoader(mEngine);
+
 	// Materials
 	auto materialLoader = MaterialLoader(mEngine);
 	auto materialData = materialLoader.loadMaterialData(MaterialLoader::MaterialType::MaterialTypeUnLit);
@@ -65,8 +67,6 @@ void FilamentApp::run(void* windowHandle, void* context, unsigned int w, unsigne
 	ground->setPosition({ 0, 0, 0 });
 	ground->setScale(10, 1, 10);
 	mScene->addEntity(ground->getRenderable());
-
-
 
 	// Spheres   	
 	auto colorComputer = [](int index)->const float3& {
@@ -136,7 +136,7 @@ void FilamentApp::run(void* windowHandle, void* context, unsigned int w, unsigne
 			walls.push_back(texturedWall);
 			auto scale = PxVec3(40, 40, 40);
 			float3 s = { 40 };
-			texturedWall->setObjScale(s);
+			texturedWall->setScale(40,40,40);
 			texturedWall->setCastShadows(false);
 			auto x = i % 2 ? 40 * 2 : 0; auto y = 40; auto z = i % 2 == 0 ? 40 * 2 : 0;
 			if (i == 1) x = -x; if (i == 2) z = -z;
@@ -146,15 +146,33 @@ void FilamentApp::run(void* windowHandle, void* context, unsigned int w, unsigne
 		}
 		mEngine->destroy(texCubeMat);
 	}
+	// Load gltf model
+	/*helmetAsset = gltfModelLoader->loadAsset(
+		{ "models/FlightHelmet/FlightHelmet.gltf"}
+	);
+	damagedHelmet = gltfModelLoader->loadAsset(
+		{ "models/DamagedHelmet/DamagedHelmet.glb" }
+	);
+	if (helmetAsset) {
+		helmetAsset->setScale(10, 10, 10);
+		helmetAsset->setPosition(float3(0, 8, 0));
+		helmetAsset->addToScene(mScene);
+	}
+	if (damagedHelmet) {
+		damagedHelmet->setScale(2,2,2);
+		damagedHelmet->setPosition(float3(-6, 8, 0));
+		damagedHelmet->addToScene(mScene);
+	}*/
 
 	// Light
 	light = EntityManager::get().create();
 	filament::LightManager::Builder(filament::LightManager::Type::SUN)
-		.color(Color::toLinear<ACCURATE>(sRGBColor(0.98f, 0.92f, 0.89f)))
-		.intensity(110000)
-		.direction({ 0.5, -1, 0.9 })
-		.sunAngularRadius(1.9f)
-		.sunHaloSize(100)
+		.color(Color::toLinear<ACCURATE>({ 0.98, 0.92, 0.89 }))
+		.intensity(150000)
+		.direction({ 0.5, -1, -1.0 })
+		.sunAngularRadius(1.0f)
+		.sunHaloSize(2)
+		.sunHaloFalloff(80.0f)
 		.castShadows(true)
 		.build(*mEngine, light);
 	mScene->addEntity(light);
@@ -189,7 +207,15 @@ void FilamentApp::run(void* windowHandle, void* context, unsigned int w, unsigne
 	view->setPostProcessingEnabled(false);
 	view->setViewport({ 0, 0, w, h });
 	view->setShadowingEnabled(true);
-	view->setAmbientOcclusionOptions({ .enabled = true });
+	view->setAmbientOcclusionOptions({  .upsampling = View::QualityLevel::HIGH });
+
+	view->setShadowType(ShadowType::PCF);
+	view->setVsmShadowOptions({ .anisotropy = 0 });
+	view->setDithering(Dithering::TEMPORAL);
+	view->setAntiAliasing( AntiAliasing::FXAA);
+	view->setMultiSampleAntiAliasingOptions ( { .enabled = true, .sampleCount = 4 });
+	//view->ssao.enabled = true;
+	view->setBloomOptions({ .enabled = true });
 	mMainCameraMan->setViewport(w, h);
 	view->setCamera(mMainCamera);
 }
@@ -199,10 +225,10 @@ void FilamentApp::render(long long time) {
 		mTimeStp = time - mLastTime;
 		physXManager->simulate(mTimeStp / 1000.0f);
 		mRenderer->render(view);
-		auto eng = mEngine;
-		auto angle = (time / 1000.0) * 60.0 * (2 * math::F_PI) / 360;
+		auto angle = (time / 1000.0) * 10.0 * (2 * math::F_PI) / 360;
 
-		//cube->rotateY(-4 * angle);		
+		/*helmetAsset->rotateY(-0.01);
+		damagedHelmet->rotateY(0.01);*/
 
 		mMainCameraMan->update(mTimeStp / 1000.0f);
 		float3 eye, center, up;
@@ -214,6 +240,7 @@ void FilamentApp::render(long long time) {
 		physXManager->updateNodes();
 
 		mLastTime = time;
+		gltfModelLoader->updateLoad();
 		mRenderer->endFrame();
 	}
 }
@@ -221,7 +248,8 @@ void FilamentApp::render(long long time) {
 void FilamentApp::onMouseDown(int x, int y, const MouseButton& mbtn)
 {
 	if (mMainCameraMan && mbtn == Left_Button) {
-		mMainCameraMan->grabBegin(x, y, false);
+		auto screenHeight = view->getViewport().height;
+		mMainCameraMan->grabBegin(x, screenHeight-y, false);
 	}
 	if (mbtn == Right_Button) {
 		auto projectionMat = mMainCamera->getProjectionMatrix();
@@ -259,7 +287,8 @@ void FilamentApp::onMouseDown(int x, int y, const MouseButton& mbtn)
 void FilamentApp::onMouseMove(int x, int y)
 {
 	if (mMainCameraMan) {
-		mMainCameraMan->grabUpdate(x, y);
+		auto screenHeight = view->getViewport().height;
+		mMainCameraMan->grabUpdate(x, screenHeight-y);
 	}
 }
 
@@ -267,6 +296,40 @@ void FilamentApp::onMouseUp(int x, int y, const MouseButton& mbtn)
 {
 	if (mMainCameraMan && mbtn == Left_Button) {
 		mMainCameraMan->grabEnd();
+	}
+}
+
+void FilamentApp::onKeyDown(KeyCode& key)
+{
+	switch (key)
+	{
+	case ESCAPE_KEY:
+		break;
+	case SPACE_KEY:
+		createEyeProjectile();
+		break;
+	case RETURN_KEY:
+		createEyeProjectile(CubeProjectile);
+		break;
+	case F1_KEY:
+		createPyramidStack(5);
+		break;
+	case F2_KEY: {
+		/*static bool shown = false;
+		auto wireframe = helmetAsset->getWireframe();
+		if (shown) 
+			mScene->remove(wireframe);			
+		else
+			mScene->addEntity(wireframe);
+		shown = !shown;*/
+	}		
+		break;
+	case F3_KEY:
+		break;
+	case UP_KEY:
+		break;
+	default:
+		break;
 	}
 }
 
@@ -328,6 +391,13 @@ FilamentApp::~FilamentApp() {
 	delete textureLoader;
 	delete ground;
 
+	/*mScene->removeEntities(helmetAsset->getEntities(), helmetAsset->getEntityCount());
+	mScene->removeEntities(damagedHelmet->getEntities(), damagedHelmet->getEntityCount());
+	gltfModelLoader->destroyAsset(helmetAsset);
+	gltfModelLoader->destroyAsset(damagedHelmet);
+	delete helmetAsset;
+	delete damagedHelmet;*/
+	delete gltfModelLoader;
 	for (auto item : rotatingSpheres) {
 		delete item;
 	}
@@ -359,7 +429,6 @@ FilamentApp::~FilamentApp() {
 	loadedTextures.clear();
 
 	delete mMainCameraMan;
-
 	mEngine->destroy(light);
 	mEngine->destroy(mDefaultMaterial);
 	mEngine->destroy(mTexturedMaterial);

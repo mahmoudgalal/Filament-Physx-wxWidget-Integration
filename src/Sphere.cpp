@@ -94,12 +94,11 @@ Sphere::~Sphere() {
 	em.destroy(mRenderable);
 }
 
-Sphere& Sphere::setPosition(filament::math::float3 const& position) noexcept {
+void Sphere::setPosition(filament::math::float3 const& position) {
 	auto& tcm = mEngine.getTransformManager();
 	auto ci = tcm.getInstance(mRenderable);
 	translation = mat4f::translation(position);
 	tcm.setTransform(ci, translation * rotation * scale);
-	return *this;
 }
 
 Sphere& Sphere::setRadius(float radius) noexcept {

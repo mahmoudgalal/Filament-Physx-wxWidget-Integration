@@ -16,6 +16,9 @@
 #include "TexturedCube.h"
 #include "PhysXManager.h"
 #include "ShadowPlane.h"
+#include "GltfModel.h"
+#include "input_key_codes.h"
+#include "GLTFModelLoader.h"
 #include<vector>
 #include<map>
 
@@ -59,7 +62,10 @@ class FilamentApp
 	long long mLastTime = 0, mTimeStp = 0;
 	std::shared_ptr<PhysXManager> physXManager;
 	std::map<uint32_t,Node*> nodes_map;
-	 
+	GLTFModelLoader* gltfModelLoader = nullptr;
+	//GltfModel* helmetAsset = nullptr;
+	//GltfModel* damagedHelmet = nullptr;
+
 
 public:
 	enum MaterialType
@@ -82,6 +88,7 @@ public:
 	void onMouseDown(int x, int y, const MouseButton& mbtn = Left_Button);
 	void onMouseMove(int x, int y);
 	void onMouseUp(int x, int y, const MouseButton& mbtn = Left_Button);
+	void onKeyDown(KeyCode& key);
 	void createEyeProjectile(const ProjectileType& t = ProjectileType::SphereProjectile);
 	void createPyramidStack(uint32_t size, float centerX = 0.0f, float centerY = 0.0f, float centerZ = 0.0f);
 

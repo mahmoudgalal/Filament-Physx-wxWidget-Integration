@@ -9,6 +9,7 @@
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
+#include"input_key_codes.h"
 #endif
 
 #define wxCUSTOM_DEFAULT_FRAME_STYLE \
@@ -16,6 +17,35 @@
              wxCLOSE_BOX | \
              wxCAPTION | \
              wxCLIP_CHILDREN)
+
+auto KeyMapper = [](wxKeyCode code)->KeyCode {
+    switch (code)
+    {
+    case WXK_SPACE:
+        return KeyCode::SPACE_KEY;
+    case WXK_RETURN:
+        return KeyCode::RETURN_KEY;
+    case WXK_F1:
+        return KeyCode::F1_KEY;
+    case WXK_F2:
+        return KeyCode::F2_KEY;
+    case WXK_F3:
+        return KeyCode::F3_KEY;
+    case WXK_UP:
+        return KeyCode::UP_KEY;
+    case WXK_DOWN:
+        return KeyCode::DOWN_KEY;
+    case WXK_LEFT:
+        return KeyCode::LEFT_KEY;
+    case WXK_RIGHT:
+        return KeyCode::RIGHT_KEY;
+    case WXK_ESCAPE:
+        return KeyCode::ESCAPE_KEY;
+
+    default:
+        return KeyCode::NOP;
+    }
+};
 
 class RenderTimer : public wxTimer
 {
@@ -87,7 +117,7 @@ if (AllocConsole())
 }
 
 MyFrame::MyFrame()
-    : wxFrame(NULL, wxID_ANY, "Filament-Nvidia-Physx Integration Demo",wxDefaultPosition,wxSize(1024,800), wxCUSTOM_DEFAULT_FRAME_STYLE)
+    : wxFrame(NULL, wxID_ANY, "Filament-Nvidia-Physx Integration Demo",wxDefaultPosition,wxSize(1200,800), wxCUSTOM_DEFAULT_FRAME_STYLE)
 {
     Bind(wxEVT_LEFT_DOWN, [](wxMouseEvent& event) {
         wxGetApp().app->onMouseDown(event.GetX(), event.GetY());
@@ -107,17 +137,11 @@ MyFrame::MyFrame()
             FilamentApp::MouseButton::Right_Button);
         });
 	Bind(wxEVT_KEY_DOWN, [](wxKeyEvent& event) {
-		if (event.GetKeyCode() == WXK_SPACE) {
-			wxGetApp().app->createEyeProjectile();
-		}
-		else if (event.GetKeyCode() == WXK_RETURN)
-		{
-			wxGetApp().app->createEyeProjectile(FilamentApp::CubeProjectile);
-		}
-        else if (event.GetKeyCode() == WXK_F1)
-        {
-            wxGetApp().app->createPyramidStack(5);
-        }
+		wxKeyCode code = (wxKeyCode)event.GetKeyCode();
+		auto key = KeyMapper(code);
+		wxGetApp().app->onKeyDown(key);
+        if(code == WXK_ESCAPE)
+            wxGetApp().Exit();
 		});
 }
 

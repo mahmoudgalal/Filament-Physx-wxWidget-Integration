@@ -102,20 +102,6 @@ void ShadowPlane::setPosition(filament::math::float3 const& position) {
 	tcm.setTransform(ci, translation * rotation * scale);
 }
 
-void ShadowPlane::setScale(float s)
-{
-	setScale(s, s, s);
-}
-
-void ShadowPlane::setScale(float sx, float sy, float sz)
-{
-	auto& tcm = this->mEngine.getTransformManager();
-	auto ci = tcm.getInstance(getRenderable());
-	math::float3 scalVec = { sx, sy, sz };
-	scale = mat4f::scaling(scalVec);
-	tcm.setTransform(ci, translation * rotation * scale);
-}
-
 ShadowPlane::~ShadowPlane() {
 	mEngine.destroy(mVertexBuffer);
 	mEngine.destroy(mIndexBuffer);

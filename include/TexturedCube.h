@@ -38,14 +38,12 @@ public:
     }
     void onSleep(bool isSleeping) override;
 
-    void rotateX(double angle);
-    void rotateY(double angle);
-    void rotateZ(double angle);
+    void rotateX(double angle) override;
+    void rotateY(double angle) override;
+    void rotateZ(double angle) override;
     void rotateXYZ(double angle);
-    void setScale(float s);
-    void setScale(float sx, float sy, float sz);
-    void setPosition(filament::math::float3 const& position);
-    ~TexturedCube();
+    void setPosition(filament::math::float3 const& position) override;
+    virtual ~TexturedCube();
 
 private:
     static constexpr size_t WIREFRAME_OFFSET = 3 * 2 * 6;

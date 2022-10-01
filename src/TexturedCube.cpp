@@ -160,26 +160,6 @@ void TexturedCube::setPosition(filament::math::float3 const& position) {
 	tcm.setTransform(ci, translation * rotation * scale);
 }
 
-void TexturedCube::setScale(float s)
-{
-	setScale(s, s, s);
-}
-
-void TexturedCube::setScale(float sx, float sy, float sz)
-{
-	auto& tcm = this->mEngine.getTransformManager();
-	auto ci = tcm.getInstance(getRenderable());
-	math::float3 scalVec = { sx, sy, sz };
-	scale = mat4f::scaling(scalVec);
-
-	mat4f model = tcm.getTransform(ci);
-	model[0].x = sx;
-	model[1].y = sy;
-	model[2].z = sz;
-
-	tcm.setTransform(ci, model);
-}
-
 void TexturedCube::onSleep(bool isSleeping) {
 	float4 color = isSleeping ? float4( 0.4, 0, 0, 0.4) : float4(0.0, 0, 0, 0.0);
 	mMaterialInstanceSolid->setParameter("postLightingColor", RgbaType::LINEAR, color);

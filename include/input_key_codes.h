@@ -1,0 +1,15 @@
+#pragma once
+enum KeyCode
+{
+	SPACE_KEY,
+	RETURN_KEY,
+	F1_KEY,
+	F2_KEY,
+	F3_KEY,
+	ESCAPE_KEY,
+	LEFT_KEY,
+	UP_KEY,
+	RIGHT_KEY,
+	DOWN_KEY,
+	NOP
+};

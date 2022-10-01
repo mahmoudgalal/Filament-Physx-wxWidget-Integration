@@ -47,11 +47,11 @@ public:
         return mEngine;
     }
 
-    Sphere& setPosition(filament::math::float3 const& position) noexcept;
+    void setPosition(filament::math::float3 const& position) override ;
     Sphere& setRadius(float radius) noexcept;
-    void rotateX(double angle);
-    void rotateY(double angle);
-    void rotateZ(double angle);
+    void rotateX(double angle) override;
+    void rotateY(double angle) override;
+    void rotateZ(double angle) override;
 
 private:
     filament::Engine& mEngine;
